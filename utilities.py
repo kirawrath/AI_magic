@@ -2,7 +2,7 @@ from random import sample, seed, random
 from card import *
 from deck import Deck
 import copy
-debug_flag=True
+debug_flag=False
 def debug(*args):
 	if debug_flag:
 		for a in args:

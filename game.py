@@ -3,6 +3,7 @@ from deck import Deck
 from card import *
 from player import *
 from utilities import debug, debug_flag
+from copy import copy, deepcopy
 class Game:
 	def __init__(self, decks):
 		self.decks = decks
@@ -46,18 +47,20 @@ class Game:
 	def fight(self):
 		decks = self.decks
 		for i in range(0, len(decks), 2):
-			p1 = decks[i]
-			p2 = []
-			if len(decks) == i-1:
-				p2 = decks [i-1]
+			d1 = decks[i]
+			d2 = []
+			if len(decks)-1 == i:
+				d2 = decks [i-1]
 			else:
-				p2 = decks[i+1]
+				d2 = decks[i+1]
 
-			shuffle(p1)
-			shuffle(p2)
+			shuffle(d1)
+			shuffle(d2)
 
-			p1 = Player(p1, 1)
-			p2 = Player(p2, 2)
+			assert len(d1) == 60 and len(d2) == 60
+
+			p1 = Player(deepcopy(d1), 1)
+			p2 = Player(deepcopy(d2), 2)
 			# p1 doesn't draw in the first turn
 			p1.deck.cards.append(p1.hand.pop())
 
@@ -102,11 +105,11 @@ class Game:
 			debug( 'Game ended in', n_turns,'turns.')
 			if n_turns % 2==0:
 				p1,p2=p2,p1
-			debug( 'Lives:', p1.life, p2.life)
-
+			debug('Lives:', p1.life, p2.life)
+			assert len(d1) == 60 and len(d2) == 60
 			if p2.life == 0: #p2 died by deckout before killing p1
-				p2.deck.loss += 1
-				p1.deck.win += 1
+				d2.loss += 1
+				d1.win += 1
 			else:
-				p1.deck.win += 1
-				p2.deck.loss += 1
+				d1.win += 1
+				d2.loss += 1

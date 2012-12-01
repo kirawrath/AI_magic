@@ -20,6 +20,20 @@ class Creature(Card):
 		self.cost = ''
 	def damage(self, amount):
 		self.dmg = amount
+	def converted_cost(self):
+		c=0
+		cost = self.cost
+		for d in cost:
+			if d.isalpha():
+				c+=1
+			else:
+				n=cost[cost.index(d):]
+				if n.isdigit():
+					c += int(n)
+					break
+				else:
+					print 'Failed to get converted mana cost'
+		return c
 
 
 class Land(Card):
