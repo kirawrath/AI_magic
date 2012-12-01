@@ -5,6 +5,8 @@ class Card:
 		self.tapped = False
 	def __str__(self):
 		return self.name
+	def tap(self):
+		self.tapped = True
 
 class Creature(Card):
 	def __init__(self):
@@ -15,6 +17,7 @@ class Creature(Card):
 		self.dmg = 0
 		self.attacking = False
 		self.blocker = None
+		self.cost = ''
 	def damage(self, amount):
 		self.dmg = amount
 

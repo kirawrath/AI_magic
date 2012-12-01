@@ -1,61 +1,8 @@
 from random import shuffle
 from deck import Deck
 from card import *
-class Player:
-	def __init__(self, deck, idd=0):
-		self.deck = deck
-		self.life = 20
-		self.hand = []
-		self.id = idd
-		for i in range(7):
-			self.hand.append(self.deck.pop())
-		self.battlefield = []
-	def dec_life(self, amount):
-		self.life -= amount
-	def draw(self):
-		if len(self.deck) == 0:
-			self.life = 0
-			print 'Deckout!'
-			return
-		self.hand.append(self.deck.pop())
-	def play_card_type(self, card_type):
-		for d in self.hand:
-			if isinstance(d, card_type):
-				self.battlefield.append(self.hand.pop(self.hand.index(d)))
-				return
-	def untap_and_upkeep(self):
-		for d in self.battlefield:
-			d.tapped = False
-			d.sick = False
-	def attack(self, p2):
-		for atkr in self.creatures():
-			if atkr.sick:
-				continue
-			atkr.attacking = True
-			for defr in p2.creatures():
-				if defr.toughness > atkr.power and (not defr.tapped):
-					atkr.attacking = False
-					break
-			if atkr.attacking:
-				print atkr
-	def creatures(self):
-		return [c for c in self.battlefield if isinstance(c, Creature)]
-	def lands(self):
-		return [c for c in self.battlefield if isinstance(c, Land)]
-	def defend(self, p1):
-		for defr in self.creatures():
-			if defr.tapped:
-				continue
-			attackers = [a for a in p1.creatures() if a.attacking and \
-					a.blocker == None]
-			for atkr in attackers:
-				if defr.power >= atkr.toughness:
-					defr.damage(atkr.power)
-					atkr.damage(defr.power)
-					atkr.blocker = defr
-					print 'blocking:',atkr.name,defr.name
-					break
-
+from player import *
+from utilities import debug, debug_flag
 class Game:
 	def __init__(self, decks):
 		self.decks = decks
@@ -111,6 +58,9 @@ class Game:
 
 			p1 = Player(p1, 1)
 			p2 = Player(p2, 2)
+			# p1 doesn't draw in the first turn
+			p1.deck.cards.append(p1.hand.pop())
+
 			n_turns = 0
 
 			while p1.life > 0:
@@ -118,38 +68,41 @@ class Game:
 				p1.untap_and_upkeep()
 				p1.draw()
 				p1.play_card_type(Land)
-				p1.play_card_type(Creature)
+				while p1.play_card_type(Creature):
+					pass
 				p1.attack(p2)
 				p2.defend(p1)
 				self.resolve_damage(p1, p2)
 
 				if len(p1.hand) > 7:
-					print 'Removing', p1.hand[0].name, 'from hand.'
+					debug( 'Removing', p1.hand[0].name, 'from hand.')
 					p1.hand.pop(0)
 				
-				if n_turns % 2 == 0:
-					print 'Turn', n_turns, ': p1', p1.life, ' p2', p2.life
-					print 'p1:'
-					for c in p1.creatures():
-						print c.name
-					print 'p2:'
-					for c in p2.creatures():
-						print c.name
-					p1, p2 = p2, p1
+				if debug_flag:
+					if n_turns % 2 == 0:
+						print 'Turn', n_turns, ': p1', p1.life, ' p2', p2.life
+						print( 'p1:')
+						print Deck(p1.battlefield)
+						print( 'p2:')
+						print Deck(p2.battlefield)
+						p1, p2 = p2, p1
+					else:
+						p1, p2 = p2, p1
+						print 'Turn', n_turns, ': p1', p1.life, ' p2', p2.life
+						print( 'p1:')
+						print Deck(p1.battlefield)
+						print( 'p2:')
+						print Deck(p2.battlefield)
+					print( '-'*20)
 				else:
-					p1, p2 = p2, p1
-					print 'Turn', n_turns, ': p1', p1.life, ' p2', p2.life
-					print 'p1:'
-					for c in p1.creatures():
-						print c.name
-					print 'p2:'
-					for c in p2.creatures():
-						print c.name
-				print '-'*20
+					p1,p2 = p2,p1
 
 				n_turns+=1
-			print 'Game ended in', n_turns,'turns.'
-			print 'Lives:', p1.life, p2.life
+			n_turns-=1
+			debug( 'Game ended in', n_turns,'turns.')
+			if n_turns % 2==0:
+				p1,p2=p2,p1
+			debug( 'Lives:', p1.life, p2.life)
 
 			if p2.life == 0: #p2 died by deckout before killing p1
 				p2.deck.loss += 1
