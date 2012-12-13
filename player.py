@@ -15,9 +15,10 @@ class Player:
 	def draw(self):
 		if len(self.deck) == 0:
 			self.life = 0
-			debug( 'Deckout!')
-			return
+			debug('Deckout!')
+			return False
 		self.hand.append(self.deck.pop())
+		return True
 	def try_to_pay_cost(self, card):
 		lands = self.lands()
 		used=[]

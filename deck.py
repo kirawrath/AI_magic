@@ -1,9 +1,14 @@
 from card import *
 class Deck:
-	def __init__(self, cards = []):
-		self.cards = cards
+	def __init__(self, cards = None):
+		if cards is None:
+			self.cards = []
+		else:
+			self.cards = cards
 		self.win=0
 		self.loss=0
+		self.id = get_new_id()
+
 	def __len__(self):
 		return len(self.cards)
 	def __iter__(self):
@@ -15,7 +20,7 @@ class Deck:
 	def pop(self):
 		return self.cards.pop()
 	def __str__(self):
-		st=''
+		st='Deck #' + str(self.id) + ':\n'
 		lands_st='\n'
 		cards=[]
 		totalcost=0.0
@@ -43,3 +48,4 @@ class Deck:
 	def remove(self, card):
 		self.cards.remove(card)
 
+from utilities import get_new_id

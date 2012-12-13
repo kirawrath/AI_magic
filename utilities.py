@@ -2,12 +2,19 @@ from random import sample, seed, random
 from card import *
 from deck import Deck
 import copy
-debug_flag=False
+debug_flag=True
 def debug(*args):
 	if debug_flag:
 		for a in args:
 			print a,
 		print
+deck_id = -1
+def get_new_id():
+	global deck_id
+	deck_id+=1
+	if debug_flag:
+		print 'Deck', deck_id, 'created!'
+	return deck_id
 def create_database():
 	f = open('./database')
 	DB=[]
@@ -43,3 +50,23 @@ def generate_random_deck(DB):
 		if count < 4 or isinstance(card, Land):
 			deck.cards.append(copy.copy(card))
 	return deck
+def print_field(bf):
+	st=''
+	lands_st='\n'
+	cards=[]
+	lands=[]
+	for d in bf:
+		if isinstance(d, Land):
+			if d.name in lands:
+				continue
+			lands_st+=str(len([c for c in bf if c.name == d.name])) 
+			lands_st += 'x ' + str(d) + '\n'
+			lands.append(d.name)
+			continue
+		if d.name in cards:
+			continue
+		st += str(len([c for c in bf if c.name == d.name])) + 'x '
+		st += str(d) + '\n'
+		cards.append(d.name)
+	st += lands_st
+	print st

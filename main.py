@@ -16,7 +16,7 @@ if __name__ == '__main__':
 	
 	game = Game(decks)
 	
-	loops=30
+	loops=1
 	if len(argv) > 1:
 		loops = int(argv[1])
 
@@ -33,6 +33,7 @@ if __name__ == '__main__':
 
 		game(decks)
 	
-	for d in decks:
+	print '\nWinners:\n'
+	for d in game.winners():
 		print d
 		print '-'*20
