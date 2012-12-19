@@ -1,0 +1,60 @@
+\documentclass{beamer}
+\usepackage{beamerthemeshadow}
+\begin{document}
+\title{Building a Magic Deck AutoMagically}
+\author{Bruno Farias de Loreto}
+\date{\today} 
+
+\frame{\titlepage} 
+
+%\frame{\frametitle{Table of contents}\tableofcontents} 
+\section{Describing the game} 
+\frame{\frametitle{The Game} 
+\begin{enumerate}
+	\item Based on ``Magic: The Gathering''
+	\item Simplifications in the domain of the original game
+	\begin{itemize}
+		\item Creatures and Lands
+	\end{itemize}
+\end{enumerate} 
+\begin{center}
+	\includegraphics[width=3cm]{./89}
+\end{center}
+}
+
+\section{Describing the problem}
+\frame{\frametitle{Problem to be solved}
+\begin{itemize}
+	\item Creating a good deck is challenging
+	\item 20k+ cards avaliable
+\end{itemize} 
+}
+
+
+\section{The Approach}
+\frame{\frametitle{Genetic Algorithm}
+\begin{itemize}
+	\item Create a set of X random decks (generation)
+	\item Simulate a fight between each other using simple heuristics
+	\item Compute scores (win/lose)
+	\item Select the best decks from the current generation (won - lost), ratio $> 0.6$
+	\item Reproduce (crossover)
+	\item Mutate
+\end{itemize} 
+}
+
+\section{Results}
+\frame{\frametitle{Results}
+\begin{enumerate}
+	\item Found some decks with the expected Creature/Land ratio and Mana Average
+	\item Introduction of overpowered card in the DB makes most ``winner'' decks adopt it
+	\item Sometimes it fail to find a good enough deck (which was expected)
+	\begin{itemize}
+		\item In that case you at least have somewhere to start
+	\end{itemize}
+	\item Time Complexity
+
+\end{enumerate} 
+}
+\end{document}
+

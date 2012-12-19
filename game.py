@@ -1,11 +1,10 @@
-from random import shuffle
+from random import shuffle, random
 from deck import Deck
 from card import *
 from player import *
 from utilities import debug, debug_flag, print_field, partial_results
+from utilities import trace_battle
 from copy import copy, deepcopy
-trace_battle=True # To print (or not) the battle
-#trace_battle=False
 class Game:
 	def __init__(self, decks):
 		self.decks = decks
@@ -68,14 +67,13 @@ class Game:
 			shuffle(d1.cards)
 			shuffle(d2.cards)
 
-			assert d1 is not d2
-			assert len(d1) == 60 and len(d2) == 60
-			assert id(d1) != id(d2)
-			assert d1.cards != d2.cards
-			assert id(d1.cards) != id(d2.cards)
 
 			p1 = Player(deepcopy(d1), 1)
 			p2 = Player(deepcopy(d2), 2)
+
+			# A random player will start the game
+			if random() < 0.5:
+				p1,p2=p2,p1
 			# p1 doesn't draw in the first turn
 			p1.deck.cards.append(p1.hand.pop())
 
