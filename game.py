@@ -2,9 +2,10 @@ from random import shuffle
 from deck import Deck
 from card import *
 from player import *
-from utilities import debug, debug_flag, print_field
+from utilities import debug, debug_flag, print_field, partial_results
 from copy import copy, deepcopy
 trace_battle=True # To print (or not) the battle
+#trace_battle=False
 class Game:
 	def __init__(self, decks):
 		self.decks = decks
@@ -13,13 +14,13 @@ class Game:
 	def winners(self):
 		winners = []
 		for _ in range(len(self.decks)/2):
-			ratio = -1
+			best = -float('inf')
 			winner = None
 			for d in self.decks:
-				if d in winners or (d.win+d.loss==0):
+				if d in winners or d.ratio() < 0.6:
 					continue
-				if (float(d.win)/(d.win+d.loss)) > ratio:
-					ratio = float(d.win)/(d.win+d.loss)
+				if d.win - d.loss > best:
+					best = d.win - d.loss
 					winner = d
 			assert winner != None
 			winners.append(winner)
@@ -44,6 +45,15 @@ class Game:
 			c.blocker = None
 			c.attacking = False
 
+	def print_game_state(self, p1, p2, n_turns):
+		if debug_flag and trace_battle:
+			print 'Turn', n_turns, ': p1', '('+str(p1.deck.id)+')',
+			print p1.life, ' p2', '('+str(p2.deck.id)+')', p2.life
+			print( 'p1:')
+			print_field(p1.battlefield)
+			print( 'p2:')
+			print_field(p2.battlefield)
+			print( '-'*20)
 
 	def fight(self):
 		decks = self.decks
@@ -60,6 +70,9 @@ class Game:
 
 			assert d1 is not d2
 			assert len(d1) == 60 and len(d2) == 60
+			assert id(d1) != id(d2)
+			assert d1.cards != d2.cards
+			assert id(d1.cards) != id(d2.cards)
 
 			p1 = Player(deepcopy(d1), 1)
 			p2 = Player(deepcopy(d2), 2)
@@ -86,26 +99,12 @@ class Game:
 					debug('Removing', p1.hand[0].name, 'from hand.')
 					p1.hand.pop(0)
 				
-				if debug_flag and trace_battle:
-					if n_turns % 2 == 0:
-						print 'Turn', n_turns, ': p1', '('+str(p1.deck.id)+')',
-						print p1.life, ' p2', '('+str(p2.deck.id)+')', p2.life
-						print( 'p1:')
-						print_field(p1.battlefield)
-						print( 'p2:')
-						print_field(p2.battlefield)
-						p1, p2 = p2, p1
-					else:
-						p1, p2 = p2, p1
-						print 'Turn', n_turns, ': p1', '('+str(p1.deck.id)+')',
-						print p1.life, ' p2', '('+str(p2.deck.id)+')', p2.life
-						print( 'p1:')
-						print_field(p1.battlefield)
-						print( 'p2:')
-						print_field(p2.battlefield)
-					print( '-'*20)
+				if n_turns % 2 == 0:
+					self.print_game_state(p1,p2,n_turns)
+					p1, p2 = p2, p1
 				else:
-					p1,p2 = p2,p1
+					p1, p2 = p2, p1
+					self.print_game_state(p1,p2,n_turns)
 
 				n_turns+=1
 			n_turns-=1
@@ -130,3 +129,8 @@ class Game:
 				else:
 					d1.loss += 1
 					d2.win += 1
+		if partial_results:
+			print '# Partial result: #'
+			for w in decks:
+				print '['+str(w.id)+'] =',w.win, w.loss, w.ratio()
+			print '###################'

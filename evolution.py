@@ -1,7 +1,7 @@
 from random import random, sample
 from deck import *
 from card import *
-from copy import copy
+from copy import copy, deepcopy
 
 # Amount is the % of "genetic code "that is exchanged
 def reproduce(winners, amount=0.1):
@@ -32,8 +32,8 @@ def reproduce(winners, amount=0.1):
 # n_swaps is the amount of cards to be
 # exchanged
 def crossover(deck1, deck2, n_swaps):
-	a=Deck(deck1.cards)
-	b=Deck(deck2.cards)
+	a=Deck(deepcopy(deck1.cards))
+	b=Deck(deepcopy(deck2.cards))
 	while n_swaps:
 		card = a[int(random()*60)]
 		count = len([x for x in b if x.name == card.name])
@@ -57,7 +57,7 @@ def crossover(deck1, deck2, n_swaps):
 def mutate(decks, DB, amount=0.15):
 	assert amount <= 1
 	for d in decks:
-		mutate_deck(d, DB, amount*60)
+		mutate_deck(d, DB, int(amount*60))
 	return decks
 # Mutate deck by changing amount% of its cards
 # with cards from DB

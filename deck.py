@@ -8,7 +8,10 @@ class Deck:
 		self.win=0
 		self.loss=0
 		self.id = get_new_id()
-
+	def ratio(self):
+		if self.win + self.loss == 0:
+			return 0
+		return float(self.win)/(self.win+self.loss)
 	def __len__(self):
 		return len(self.cards)
 	def __iter__(self):

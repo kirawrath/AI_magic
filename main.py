@@ -5,9 +5,8 @@ from utilities import *
 from deck import *
 from sys import argv
 
-
 if __name__ == '__main__':
-	n_decks = 4 # Number of decks in each generation
+	n_decks = 12 # Number of decks in each generation
 	decks = []
 	DB = create_database()
 	for i in range(n_decks):
@@ -27,9 +26,9 @@ if __name__ == '__main__':
 		# Return a list with n_decks/2 decks
 		winners = game.winners()
 
-		decks = reproduce(winners) #crossover
+		decks = reproduce(winners, 0.10) #crossover
 
-		decks = mutate(decks, DB)
+		decks = mutate(decks, DB, 0.15)
 
 		game(decks)
 	

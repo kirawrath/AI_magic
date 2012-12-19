@@ -3,6 +3,8 @@ from card import *
 from deck import Deck
 import copy
 debug_flag=True
+#debug_flag=False
+partial_results = True #To print partial results
 def debug(*args):
 	if debug_flag:
 		for a in args:
@@ -26,16 +28,21 @@ def create_database():
 			card = Land()
 			card.color = line[2]
 			card.name = name
-		if line[1] == 'C':
+		elif line[1] == 'C':
+			assert len(line) == 5
 			card = Creature()
 			card.name = name
 			card.cost = line[2]
 			if line[2][0].isdigit():
 				card.cost = line[2][::-1] #reverse string
-				if card.cost[-2].isdigit(): #mana cost > 10
-					card.cost[-1], card.cost[-2] = card.cost[-2], card.cost[-1]
+				# Don't work for mana cost > 99 (which is fine).
+				if len(card.cost) > 1 and card.cost[-2].isdigit(): #mana cost > 10
+					card.cost = card.cost[:len(card.cost)-2]+card.cost[-1]+card.cost[-2]
 			card.power = int(line[3])
 			card.toughness = int(line[4])
+		else:
+			print line
+			assert False
 			
 		DB.append(card)
 	return DB
