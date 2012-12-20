@@ -2,11 +2,10 @@ from random import sample, seed, random
 from card import *
 from deck import Deck
 import copy
-#trace_battle=True # To print (or not) the battle
-trace_battle=False
-#debug_flag=True
-debug_flag=False
-partial_results = False #To print partial results
+trace_battle=False # To print (or not) the battle
+debug_flag=False # Print the entire battle
+partial_results=False #To print partial score results
+
 def debug(*args):
 	if debug_flag:
 		for a in args:
